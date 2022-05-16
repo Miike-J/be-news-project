@@ -11,7 +11,7 @@ afterAll(() => db.end)
 describe('/api/topics', () => {
     test('200: Responds with array of topic objects each with slug and description', () => {
         return request(app).get('/api/topics').expect(200).then((results) => {
-            const topics = results.body
+            const {topics} = results.body
             expect(topics).toBeInstanceOf(Array)
             expect(topics).toHaveLength(3)
             topics.forEach(topic => {
