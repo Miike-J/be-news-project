@@ -35,14 +35,15 @@ describe('Incorrect file path', () => {
 describe('/api/articles/articles_id', () => {
     test('200: Get responds with an article object', () => {
         return request(app).get('/api/articles/1').expect(200).then(({body}) => {
-            expect(body.article).toMatchObject({
+            expect(body.article).toEqual(expect.objectContaining({
                 title: "Living in the shadow of a great man",
                 topic: "mitch",
                 author: "butter_bridge",
                 body: "I find this existence challenging",
                 created_at: '2020-07-09T20:11:00.000Z',
                 votes: 100,
-            })
+                article_id: 1
+            }))
         })
     })
     test('400: parametric endpoint isnt a number', () => {
@@ -124,6 +125,24 @@ describe('/api/users', () => {
                     username: expect.any(String)
                 })
             })
+        })
+    })
+})
+
+describe('/api/articles/articles_id refactor', () => {
+    test('200: Refactor Get should also include comment_count key which is the total count of all the comments with this article_id', () => {
+        return request(app).get('/api/articles/1').expect(200).then(({body}) => {
+            console.log(body.article)
+            expect(body.article).toEqual(expect.objectContaining({
+                title: "Living in the shadow of a great man",
+                topic: "mitch",
+                author: "butter_bridge",
+                body: "I find this existence challenging",
+                created_at: '2020-07-09T20:11:00.000Z',
+                votes: 100,
+                comment_count: 11,
+                article_id: 1
+            }))
         })
     })
 })
