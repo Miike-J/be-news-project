@@ -2,7 +2,7 @@ const db = require('../db/connection')
 
 exports.selectArticleById = (article_id) => {
 
-    return db.query(`SELECT articles.title, articles.topic, articles.author, articles.body, articles.created_at, articles.votes, CAST(COUNT(comments.article_id) AS int) as comment_count
+    return db.query(`SELECT articles.*, CAST(COUNT(comments.article_id) AS int) as comment_count
     FROM articles 
     JOIN comments 
         ON articles.article_id = comments.article_id

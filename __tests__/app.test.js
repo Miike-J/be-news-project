@@ -42,6 +42,7 @@ describe('/api/articles/articles_id', () => {
                 body: "I find this existence challenging",
                 created_at: '2020-07-09T20:11:00.000Z',
                 votes: 100,
+                article_id: 1
             }))
         })
     })
@@ -139,7 +140,8 @@ describe('/api/articles/articles_id refactor', () => {
                 body: "I find this existence challenging",
                 created_at: '2020-07-09T20:11:00.000Z',
                 votes: 100,
-                comment_count: 11
+                comment_count: 11,
+                article_id: 1
             }))
         })
     })
