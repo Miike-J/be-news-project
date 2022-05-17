@@ -2,7 +2,13 @@ const db = require('../db/connection')
 
 exports.selectArticleById = (article_id) => {
 
-    return db.query('SELECT * FROM articles WHERE article_id = $1', [article_id]).then(results => {
+    return db.query(`SELECT articles.title, articles.topic, articles.author, articles.body, articles.created_at, articles.votes, CAST(COUNT(comments.article_id) AS int) as comment_count
+    FROM articles 
+    JOIN comments 
+        ON articles.article_id = comments.article_id
+    WHERE articles.article_id = $1 
+    GROUP BY articles.article_id
+    `, [article_id]).then(results => {
         if(results.rows.length === 0){
             return Promise.reject({status: 404, msg: 'article doesnt exist'})
         }
@@ -29,3 +35,5 @@ exports.updateArticleById = (article_id, inc_votes) => {
         return results.rows[0]
     })
 }
+
+//'SELECT * FROM articles WHERE article_id = $1'
