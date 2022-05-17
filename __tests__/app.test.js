@@ -99,8 +99,14 @@ describe('/api/articles/articles_id', () => {
             expect(body.msg).toBe('bad request')
         })
     })
-    test('400: obj value is trying to remove more votes than current votes value', () => {
+    test('400: obj value is trying to remove more votes than current votes value (stop having negative number of votes)', () => {
         updateObj = {inc_votes: -101}
+        return request(app).patch('/api/articles/1').send(updateObj).expect(400).then(({body}) => {
+            expect(body.msg).toBe('bad request')
+        })
+    })
+    test('400: obj key is wrong', () => {
+        const updateObj = {change_votes: 10}
         return request(app).patch('/api/articles/1').send(updateObj).expect(400).then(({body}) => {
             expect(body.msg).toBe('bad request')
         })
