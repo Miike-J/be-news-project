@@ -7,7 +7,9 @@ exports.getTopics = (req, res) => {
 }
 
 exports.getArticlesById = (req, res, next) => {
+    
     const {article_id} = req.params
+
     selectArticlesById(article_id).then(results => {
         res.status(200).send({article: results})
     }).catch(next)
