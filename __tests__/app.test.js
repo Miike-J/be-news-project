@@ -55,4 +55,60 @@ describe('/api/articles/articles_id', () => {
             expect(body.msg).toBe('article doesnt exist')
         })
     })
+    test('200: Patch accepts obj and updates votes property on article from given id', () => {
+        const updateObj = {inc_votes: 10}
+        return request(app).patch('/api/articles/1').send(updateObj).expect(200).then(({body}) => {
+            expect(body.article).toMatchObject({
+                title: "Living in the shadow of a great man",
+                topic: "mitch",
+                author: "butter_bridge",
+                body: "I find this existence challenging",
+                created_at: '2020-07-09T20:11:00.000Z',
+                votes: 110,
+            })
+        })
+    })
+    test('200: Check patch works with negatives', () => {
+        const updateObj = {inc_votes: -99}
+        return request(app).patch('/api/articles/1').send(updateObj).expect(200).then(({body}) => {
+            expect(body.article).toMatchObject({
+                title: "Living in the shadow of a great man",
+                topic: "mitch",
+                author: "butter_bridge",
+                body: "I find this existence challenging",
+                created_at: '2020-07-09T20:11:00.000Z',
+                votes: 1,
+            })
+        })
+    })
+    test('400: parametric endpoint isnt a number', () => {
+        const updateObj = {inc_votes: 11111}
+        return request(app).patch('/api/articles/beans').send(updateObj).expect(400).then(({body}) => {
+            expect(body.msg).toBe('bad request')
+        })
+    })
+    test('404: parametric endpoint is too high', () => {
+        const updateObj = {inc_votes: 11111}
+        return request(app).patch('/api/articles/20').send(updateObj).expect(404).then(({body}) => {
+            expect(body.msg).toBe('article doesnt exist')
+        })
+    })
+    test('400: obj value is wrong type', () => {
+        const updateObj = {inc_votes: 'cheese'}
+        return request(app).patch('/api/articles/1').send(updateObj).expect(400).then(({body}) => {
+            expect(body.msg).toBe('bad request')
+        })
+    })
+    test('400: obj value is trying to remove more votes than current votes value (stop having negative number of votes)', () => {
+        updateObj = {inc_votes: -101}
+        return request(app).patch('/api/articles/1').send(updateObj).expect(400).then(({body}) => {
+            expect(body.msg).toBe('bad request')
+        })
+    })
+    test('400: obj key is wrong', () => {
+        const updateObj = {change_votes: 10}
+        return request(app).patch('/api/articles/1').send(updateObj).expect(400).then(({body}) => {
+            expect(body.msg).toBe('bad request')
+        })
+    })
 })
