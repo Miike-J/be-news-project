@@ -3,6 +3,7 @@ const app = require('../app')
 const seed = require('../db/seeds/seed')
 const topicData = require('../db/data/test-data/index')
 const request = require('supertest')
+require('jest-sorted')
 
 beforeEach(() => seed(topicData))
 
@@ -28,6 +29,27 @@ describe('Incorrect file path', () => {
     test('404: not found', () => {
         return request(app).get('/sendtopics').expect(404).then((results) => {
             expect(results.body.msg).toBe('Not found')
+        })
+    })
+})
+
+describe('/api/articles', () => {
+    test('200: Responds with an articles array of article objects - need a comment_count key - sorted by date in descending order', () =>{
+        return request(app).get('/api/articles').expect(200).then(({body}) => {
+            expect(body.articles).toBeInstanceOf(Array)
+            expect(body.articles).toHaveLength(12)
+            expect(body.articles).toBeSortedBy('created_at', {descending: true})
+            body.articles.forEach(article => {
+                expect(article).toEqual(expect.objectContaining({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    comment_count: expect.any(Number)
+                }))
+            })
         })
     })
 })
@@ -132,7 +154,6 @@ describe('/api/users', () => {
 describe('/api/articles/articles_id refactor', () => {
     test('200: Refactor Get should also include comment_count key which is the total count of all the comments with this article_id', () => {
         return request(app).get('/api/articles/1').expect(200).then(({body}) => {
-            console.log(body.article)
             expect(body.article).toEqual(expect.objectContaining({
                 title: "Living in the shadow of a great man",
                 topic: "mitch",
