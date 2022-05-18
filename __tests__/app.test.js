@@ -136,6 +136,39 @@ describe('/api/articles/articles_id', () => {
     })
 })
 
+describe('/api/articles/:article_id/comments', () => {
+    test('200: Get responds with an array of comment objects for given id', () => {
+        return request(app).get('/api/articles/1/comments').expect(200).then(({body}) => {
+            expect(body.comments).toBeInstanceOf(Array)
+            expect(body.comments).toHaveLength(11)
+            body.comments.forEach(comment => {
+                expect(comment).toEqual(expect.objectContaining({
+                    comment_id: expect.any(Number),
+                    votes: expect.any(Number),
+                    created_at: expect.any(String),
+                    author: expect.any(String),
+                    body: expect.any(String)
+                }))
+            })
+        })
+    })
+    test('200: article has no comments', () => {
+        return request(app).get('/api/articles/12/comments').expect(200).then(({body}) =>{
+            expect(body.comments).toEqual([])
+        })
+    })
+    test('400: article_id isnt a number', () => {
+        return request(app).get('/api/articles/moose/comments').expect(400).then(({body}) => {
+            expect(body.msg).toBe('bad request')
+        })
+    })
+    test('404: article_id too high', () => {
+        return request(app).get('/api/articles/100/comments').expect(404).then(({body}) => {
+            expect(body.msg).toBe('article doesnt exist')
+        })
+    })
+})
+
 describe('/api/users', () => {
     test('200: Get responds with an array of objects with the username property', () => {
         return request(app).get('/api/users').expect(200).then(({body}) => {
