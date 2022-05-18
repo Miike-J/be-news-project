@@ -152,9 +152,9 @@ describe('/api/articles/:article_id/comments', () => {
             })
         })
     })
-    test('404: article has no comments', () => {
-        return request(app).get('/api/articles/12/comments').expect(404).then(({body}) =>{
-            expect(body.msg).toBe('no comments')
+    test('200: article has no comments', () => {
+        return request(app).get('/api/articles/12/comments').expect(200).then(({body}) =>{
+            expect(body.comments).toEqual([])
         })
     })
     test('400: article_id isnt a number', () => {

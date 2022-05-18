@@ -51,21 +51,21 @@ exports.selectArticles = () => {
 }
 
 exports.selectArticleCommentsById = (article_id) => {
-    return db.query(`SELECT articles.article_id, comments.comment_id, comments.body, comments.votes, comments.created_at, comments.author 
-     FROM articles 
-     LEFT JOIN comments 
-         ON articles.article_id = comments.article_id
-     WHERE articles.article_id = $1 
-     `, [article_id]).then(results => {
-         if(results.rows.length === 0){
-                 return Promise.reject({status: 404, msg: 'article doesnt exist'})
-             }
-         if(results.rows[0].comment_id === null) {
-             return Promise.reject({status: 404, msg: 'no comments'})
-         }
-         
-         return results.rows.map(({article_id, ...items}) => {
-             return items
-         })
-     })
- }
+   return db.query(`SELECT articles.article_id, comments.comment_id, comments.body, comments.votes, comments.created_at, comments.author 
+    FROM articles 
+    LEFT JOIN comments 
+        ON articles.article_id = comments.article_id
+    WHERE articles.article_id = $1 
+    `, [article_id]).then(results => {
+        if(results.rows.length === 0){
+                return Promise.reject({status: 404, msg: 'article doesnt exist'})
+            }
+        if(results.rows[0].comment_id === null) {
+            return []
+        }
+        
+        return results.rows.map(({article_id, ...items}) => {
+            return items
+        })
+    })
+}
