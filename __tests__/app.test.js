@@ -33,7 +33,7 @@ describe('Incorrect file path', () => {
     })
 })
 
-describe('/api/articles', () => {
+describe.only('/api/articles', () => {
     test('200: Responds with an articles array of article objects - need a comment_count key - sorted by date in descending order', () =>{
         return request(app).get('/api/articles').expect(200).then(({body}) => {
             expect(body.articles).toBeInstanceOf(Array)
@@ -63,15 +63,15 @@ describe('/api/articles', () => {
         })
     })
     test('200: can be sorted by specific topic', () => {
-        return request(app).get('/api/articles?author=butter_bridge').expect(200).then(({body}) => {
+        return request(app).get('/api/articles?topic=mitch').expect(200).then(({body}) => {
             expect(body.articles).toBeInstanceOf(Array)
-            expect(body.articles).toHaveLength(3)
+            expect(body.articles).toHaveLength(11)
             body.articles.forEach(article => {
                 expect(article).toEqual(expect.objectContaining({
-                    author: 'butter_bridge',
+                    author: expect.any(String),
                     title: expect.any(String),
                     article_id: expect.any(Number),
-                    topic: expect.any(String),
+                    topic: 'mitch',
                     created_at: expect.any(String),
                     votes: expect.any(Number),
                     comment_count: expect.any(Number)
@@ -90,7 +90,7 @@ describe('/api/articles', () => {
         })
     })
     test('404: topic not in table', () => {
-        return request(app).get('/api/articles?pet=true').expect(404).then(({body}) => {
+        return request(app).get('/api/articles?topic=cheese').expect(404).then(({body}) => {
             expect(body.msg).toBe('property doesnt exist')
         })
     })
@@ -105,7 +105,7 @@ describe('/api/articles', () => {
         })
     })
     test('400: topic blank', () => {
-        return request(app).get('/api/articles?author=').expect(400).then(({body}) => {
+        return request(app).get('/api/articles?topic=').expect(400).then(({body}) => {
             expect(body.msg).toBe('bad request')
         })
     })

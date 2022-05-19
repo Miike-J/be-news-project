@@ -36,9 +36,9 @@ exports.updateArticleById = (article_id, inc_votes) => {
     })
 }
 
-exports.selectArticles = (sort_by = 'created_at', order, specificTopic) => {
+exports.selectArticles = (sort_by = 'created_at', order, topic) => {
     const validSortBy = ['created_at', 'author', 'title', 'article_id', 'topic', 'votes', 'comment_count']
-    const validObjKeys = ['sort_by', 'order']
+    const validTopics = ['mitch', 'cats', 'paper']
 
     let qryStr = `SELECT articles.author, articles.title, articles.article_id,articles.topic, articles.created_at, articles.votes, CAST(COUNT(comments.article_id) AS int) as comment_count 
     FROM articles 
@@ -46,26 +46,21 @@ exports.selectArticles = (sort_by = 'created_at', order, specificTopic) => {
         ON articles.article_id = comments.article_id
     `
 
-    const objKey = Object.keys(specificTopic)
-    const objValue = specificTopic[objKey]
-
-    //order or topic blank
-    if(objValue === ''){
-        return Promise.reject({status: 400, msg: 'bad request'})
-    }
-
-    //topic isnt in table
-    if(objKey.length !== 0){
-       if(!(validObjKeys.includes(objKey[0]) || validSortBy.includes(objKey[0]))){
+    //topic 
+    if(topic){
+       if(!validTopics.includes(topic)) {
            return Promise.reject({status: 404, msg: 'property doesnt exist'})
        }
     }
+
+    if(topic === ''){
+        return Promise.reject({status: 400, msg: 'bad request'})
+    }
     
-    //topic
     splitArr = qryStr.split(' ')
 
-    if(splitArr.includes(`articles.${objKey},`) || objKey === 'comment_count') {
-        qryStr += ` WHERE articles.${objKey} = '${objValue}'`
+    if(validTopics.includes(topic)) {
+        qryStr += ` WHERE articles.topic = '${topic}'`
     }
 
     qryStr += ` GROUP BY articles.article_id`
@@ -88,6 +83,10 @@ exports.selectArticles = (sort_by = 'created_at', order, specificTopic) => {
         if(!(order === 'asc' || order === 'desc')) {
             return Promise.reject({status: 400, msg: 'bad request'})
         }
+    }
+
+    if(order === ''){
+        return Promise.reject({status: 400, msg: 'bad request'})
     }
 
     if(!order || order === 'desc'){
