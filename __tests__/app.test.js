@@ -109,7 +109,24 @@ describe('/api/articles', () => {
             expect(body.msg).toBe('bad request')
         })
     })
-
+    test('200: chaining queries', () => {
+        return request(app).get('/api/articles?sort_by=votes&order=asc').expect(200).then(({body}) => {
+            expect(body.articles).toBeInstanceOf(Array)
+            expect(body.articles).toHaveLength(12)
+            expect(body.articles).toBeSortedBy('votes')
+            body.articles.forEach(article => {
+                expect(article).toEqual(expect.objectContaining({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    comment_count: expect.any(Number)
+                }))
+            })
+        })
+    })
 })
 
 describe('/api/articles/articles_id', () => {
@@ -255,7 +272,7 @@ describe('/api/articles/:article_id/comments', () => {
             username: 'rogersop',
             body: 'jojpfoin'
         }
-        return request(app).post('/api/articles/bear/comments').expect(400).then(({body}) => {
+        return request(app).post('/api/articles/bear/comments').send(obj).expect(400).then(({body}) => {
             expect(body.msg).toBe('bad request')
         })
     })
