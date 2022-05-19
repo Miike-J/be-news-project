@@ -167,12 +167,12 @@ describe('/api/articles/:article_id/comments', () => {
             expect(body.msg).toBe('article doesnt exist')
         })
     })
-    test('200: Post adds obj to comments table and returns posted obj', () => {
+    test('201: Post adds obj to comments table and returns posted obj', () => {
         const commentObj = {
                username: "rogersop",
                body: "i dont know whats going on" 
         }
-        return request(app).post('/api/articles/1/comments').send(commentObj).expect(200).then(({body}) => {
+        return request(app).post('/api/articles/1/comments').send(commentObj).expect(201).then(({body}) => {
             expect(body.comment).toEqual(expect.objectContaining({
                 article_id: 1,
                 comment_id: expect.any(Number),
@@ -217,6 +217,14 @@ describe('/api/articles/:article_id/comments', () => {
         }
         return request(app).post('/api/articles/1/comments').send(badObj).expect(404).then(({body}) => {
             expect(body.msg).toBe('bad request')
+        })
+    })
+    test('400: no username/body fields', () => {
+        const badObj = {
+            body: 'dadsldfjidfslkm'
+        }
+        return request(app).post('/api/articles/1/comments').send(badObj).expect(400).then(({body}) => {
+            expect(body.msg).toBe('missing fields')
         })
     })
 })

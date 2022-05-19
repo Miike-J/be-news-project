@@ -70,7 +70,11 @@ exports.selectArticleCommentsById = (article_id) => {
     })
 }
 
-exports.insertComment = (username, body, article_id, next) => {
+exports.insertComment = (username, body, article_id) => {
+    if(username === undefined || body === undefined) {
+        return Promise.reject({status: 400, msg: 'missing fields'})
+    }
+
     if(typeof username !== 'string' || typeof body !== 'string') {
         return Promise.reject({status: 400, msg: 'bad request'})
     }
