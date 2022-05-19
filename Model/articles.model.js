@@ -36,15 +36,66 @@ exports.updateArticleById = (article_id, inc_votes) => {
     })
 }
 
-exports.selectArticles = () => {
-    
-    return db.query(`SELECT articles.author, articles.title, articles.article_id,articles.topic, articles.created_at, articles.votes, CAST(COUNT(comments.article_id) AS int) as comment_count 
+exports.selectArticles = (sort_by = 'created_at', order, specificTopic) => {
+    const validSortBy = ['created_at', 'author', 'title', 'article_id', 'topic', 'votes', 'comment_count']
+    const validObjKeys = ['sort_by', 'order']
+
+    let qryStr = `SELECT articles.author, articles.title, articles.article_id,articles.topic, articles.created_at, articles.votes, CAST(COUNT(comments.article_id) AS int) as comment_count 
     FROM articles 
     LEFT JOIN comments 
         ON articles.article_id = comments.article_id
-    GROUP BY articles.article_id
-    ORDER BY created_at DESC
-    `).then(results => {
+    `
+
+    const objKey = Object.keys(specificTopic)
+    const objValue = specificTopic[objKey]
+
+    //order or topic blank
+    if(objValue === ''){
+        return Promise.reject({status: 400, msg: 'bad request'})
+    }
+
+    //topic isnt in table
+    if(objKey.length !== 0){
+       if(!(validObjKeys.includes(objKey[0]) || validSortBy.includes(objKey[0]))){
+           return Promise.reject({status: 404, msg: 'property doesnt exist'})
+       }
+    }
+    
+    //topic
+    splitArr = qryStr.split(' ')
+
+    if(splitArr.includes(`articles.${objKey},`) || objKey === 'comment_count') {
+        qryStr += ` WHERE articles.${objKey} = '${objValue}'`
+    }
+
+    qryStr += ` GROUP BY articles.article_id`
+
+    //sort_by
+    if(sort_by.length === 0) {
+        return Promise.reject({status: 400, msg: 'bad request'})
+    }
+
+    if(sort_by){
+        if(validSortBy.includes(sort_by)) {
+         qryStr += ` ORDER BY ${sort_by}`
+        } else {
+            return Promise.reject({status: 404, msg: 'property doesnt exist'})
+        }
+    }   
+
+    //order
+    if(order){ 
+        if(!(order === 'asc' || order === 'desc')) {
+            return Promise.reject({status: 400, msg: 'bad request'})
+        }
+    }
+
+    if(!order || order === 'desc'){
+        qryStr += ` DESC`
+    }
+    
+    
+    return db.query(qryStr).then(results => {
         return results.rows
     })
 
