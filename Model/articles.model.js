@@ -69,3 +69,17 @@ exports.selectArticleCommentsById = (article_id) => {
         })
     })
 }
+
+exports.insertComment = (username, body, article_id) => {
+    if(username === undefined || body === undefined) {
+        return Promise.reject({status: 400, msg: 'missing fields'})
+    }
+
+    if(typeof username !== 'string' || typeof body !== 'string') {
+        return Promise.reject({status: 400, msg: 'bad request'})
+    }
+    
+    return db.query('INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *', [username, body, article_id]).then(results => {
+            return results.rows[0]
+        })
+    }
