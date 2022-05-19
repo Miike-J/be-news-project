@@ -167,6 +167,58 @@ describe('/api/articles/:article_id/comments', () => {
             expect(body.msg).toBe('article doesnt exist')
         })
     })
+    test('200: Post adds obj to comments table and returns posted obj', () => {
+        const commentObj = {
+               username: "rogersop",
+               body: "i dont know whats going on" 
+        }
+        return request(app).post('/api/articles/1/comments').send(commentObj).expect(200).then(({body}) => {
+            expect(body.comment).toEqual(expect.objectContaining({
+                article_id: 1,
+                comment_id: expect.any(Number),
+                body: 'i dont know whats going on',
+                author: 'rogersop',
+                votes: 0,
+                created_at: expect.any(String)
+            }))
+        })
+    })
+    test('400: username/body are the wrong type', () => {
+        const badObj = {
+            username: 2,
+            body: 'dkdkdk'
+        }
+        return request(app).post('/api/articles/1/comments').send(badObj).expect(400).then(({body}) => {
+            expect(body.msg).toBe('bad request')
+        })
+    })
+    test('400: article_id isnt a number', () => {
+        const obj = {
+            username: 'rogersop',
+            body: 'jojpfoin'
+        }
+        return request(app).post('/api/articles/bear/comments').expect(400).then(({body}) => {
+            expect(body.msg).toBe('bad request')
+        })
+    })
+    test('404: article_id too high', () => {
+        const obj = {
+            username: 'rogersop',
+            body: 'fwifenffefm'
+        }
+        return request(app).post('/api/articles/140/comments').send(obj).expect(404).then(({body}) => {
+            expect(body.msg).toBe('bad request')
+        })
+    })
+    test('404: username not registered', () => {
+        const badObj = {
+            username: 'steph_Curry',
+            body: 'wheres the basketball'
+        }
+        return request(app).post('/api/articles/1/comments').send(badObj).expect(404).then(({body}) => {
+            expect(body.msg).toBe('bad request')
+        })
+    })
 })
 
 describe('/api/users', () => {
