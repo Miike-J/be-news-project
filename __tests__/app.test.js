@@ -33,7 +33,7 @@ describe('Incorrect file path', () => {
     })
 })
 
-describe.only('/api/articles', () => {
+describe('/api/articles', () => {
     test('200: Responds with an articles array of article objects - need a comment_count key - sorted by date in descending order', () =>{
         return request(app).get('/api/articles').expect(200).then(({body}) => {
             expect(body.articles).toBeInstanceOf(Array)

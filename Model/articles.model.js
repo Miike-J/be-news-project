@@ -57,7 +57,6 @@ exports.selectArticles = (sort_by = 'created_at', order, topic) => {
         return Promise.reject({status: 400, msg: 'bad request'})
     }
     
-    splitArr = qryStr.split(' ')
 
     if(validTopics.includes(topic)) {
         qryStr += ` WHERE articles.topic = '${topic}'`
