@@ -39,12 +39,18 @@ exports.updateArticleById = (article_id, inc_votes) => {
 exports.selectArticles = (sort_by = 'created_at', order = 'desc', topic) => {
     const validSortBy = ['created_at', 'author', 'title', 'article_id', 'topic', 'votes', 'comment_count']
 
-    let qryStr = `SELECT articles.author, articles.title, articles.article_id,articles.topic, articles.created_at, articles.votes, CAST(COUNT(comments.article_id) AS int) as comment_count 
+    let qryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, CAST(COUNT(comments.article_id) AS int) as comment_count 
     FROM articles 
     LEFT JOIN comments 
-        ON articles.article_id = comments.article_id 
-    GROUP BY articles.article_id
-    `
+        ON articles.article_id = comments.article_id`
+    const qryValues = []
+
+    if(topic){
+        qryStr += ` WHERE articles.topic = $1`
+        qryValues.push(topic)
+    }
+    
+    qryStr += ` GROUP BY articles.article_id`
 
     if(sort_by){
         if(validSortBy.includes(sort_by)) {
@@ -64,19 +70,10 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', topic) => {
     }
     
     
-    return db.query(qryStr).then(results => {
-        
-        if(topic){
-            const topicCheck = results.rows.filter(article => {
-            return article.topic === topic
-            })
-            if(topicCheck.length === 0){
-                return Promise.reject({status: 404, msg: 'property doesnt exist'})
-            } else {
-                return topicCheck  
-            }
+    return db.query(qryStr, qryValues).then(results => {
+        if(results.rows.length === 0) {
+            return Promise.reject({status: 404, msg: 'property doesnt exist'})
         }
-
         return results.rows
     })
 
