@@ -4,9 +4,14 @@ const {getArticleById, patchArticleById, getArticles, getArticleCommentsById, po
 const {handlePSQLErrors, handleCustomErrors, handleServerErrors} = require('./Controller/error.controller')
 const {getUsers} = require('./Controller/users.controller')
 const {deleteComment} = require('./Controller/comments.controller')
+const endpoint = require('./endpoints.json')
 
 const app = express()
 app.use(express.json())
+
+app.get('/api', (req, res, next) => {
+    res.status(200).send(endpoint)
+})
 
 app.get('/api/topics', getTopics)
 
