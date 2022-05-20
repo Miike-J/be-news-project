@@ -52,6 +52,66 @@ describe('/api/articles', () => {
             })
         })
     })
+    test('200: can sort articles by any valid column', () => {
+        return request(app).get('/api/articles?sort_by=author').expect(200).then(({body}) => {
+            expect(body.articles).toBeSortedBy('author', {descending: true})
+        })
+    })
+    test('200: order can be set to asc or desc, default desc', () => {
+        return request(app).get('/api/articles?order=asc').expect(200).then(({body}) => {
+            expect(body.articles).toBeSortedBy('created_at')
+        })
+    })
+    test('200: can be sorted by specific topic', () => {
+        return request(app).get('/api/articles?topic=mitch').expect(200).then(({body}) => {
+            expect(body.articles).toBeInstanceOf(Array)
+            expect(body.articles).toHaveLength(11)
+            body.articles.forEach(article => {
+                expect(article).toEqual(expect.objectContaining({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: 'mitch',
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    comment_count: expect.any(Number)
+                }))
+            })
+        })
+    })
+    test('404: invalid sort_by column', () => {
+        return request(app).get('/api/articles?sort_by=authorsName').expect(404).then(({body}) => {
+            expect(body.msg).toBe('property doesnt exist')
+        })
+    })
+    test('400: order isnt asc or desc', () => {
+        return request(app).get('/api/articles?order=hightolow').expect(400).then(({body}) => {
+            expect(body.msg).toBe('bad request')
+        })
+    })
+    test('404: topic not in table', () => {
+        return request(app).get('/api/articles?topic=cheese').expect(404).then(({body}) => {
+            expect(body.msg).toBe('property doesnt exist')
+        })
+    })
+    test('200: chaining queries', () => {
+        return request(app).get('/api/articles?sort_by=votes&order=asc').expect(200).then(({body}) => {
+            expect(body.articles).toBeInstanceOf(Array)
+            expect(body.articles).toHaveLength(12)
+            expect(body.articles).toBeSortedBy('votes')
+            body.articles.forEach(article => {
+                expect(article).toEqual(expect.objectContaining({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    comment_count: expect.any(Number)
+                }))
+            })
+        })
+    })
 })
 
 describe('/api/articles/articles_id', () => {
@@ -197,7 +257,7 @@ describe('/api/articles/:article_id/comments', () => {
             username: 'rogersop',
             body: 'jojpfoin'
         }
-        return request(app).post('/api/articles/bear/comments').expect(400).then(({body}) => {
+        return request(app).post('/api/articles/bear/comments').send(obj).expect(400).then(({body}) => {
             expect(body.msg).toBe('bad request')
         })
     })

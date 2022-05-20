@@ -20,9 +20,12 @@ exports.patchArticleById = (req, res, next) => {
 }
 
 exports.getArticles = (req, res, next) => {
-    selectArticles().then(results => {
+
+    const {sort_by, order, topic} = req.query
+
+    selectArticles(sort_by, order, topic).then(results => {
         res.status(200).send({articles: results})
-    })
+    }).catch(next)
 }
 
 exports.getArticleCommentsById = (req, res, next) => {
