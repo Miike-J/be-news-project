@@ -320,3 +320,21 @@ describe('/api/articles/articles_id refactor', () => {
         })
     })
 })
+
+describe('/api/comments/comment_id', () => {
+    test('204: delete comment by given id', () => {
+        return request(app).delete('/api/comments/18').expect(204).then(({body}) => {
+            expect(body).toEqual({})
+        })
+    })
+    test('404: comment_id too high', () => {
+        return request(app).delete('/api/comments/190').expect(404).then(({body}) => {
+            expect(body.msg).toBe('comment doesnt exist')
+        })
+    })
+    test('400: comment_id not a number', () => {
+        return request(app).delete('/api/comments/nine').expect(400).then(({body}) => {
+            expect(body.msg).toBe('bad request')    
+        })
+    }) 
+})
