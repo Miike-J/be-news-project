@@ -3,6 +3,7 @@ const {getTopics} = require('./Controller/topics.controller')
 const {getArticleById, patchArticleById, getArticles, getArticleCommentsById, postArticleComment} = require('./Controller/articles.contoller')
 const {handlePSQLErrors, handleCustomErrors, handleServerErrors} = require('./Controller/error.controller')
 const {getUsers} = require('./Controller/users.controller')
+const {deleteComment} = require('./Controller/comments.controller')
 
 const app = express()
 app.use(express.json())
@@ -16,6 +17,8 @@ app.get('/api/articles/:article_id/comments', getArticleCommentsById)
 app.post('/api/articles/:article_id/comments', postArticleComment)
 
 app.get('/api/users', getUsers)
+
+app.delete('/api/comments/:comment_id', deleteComment)
 
 app.use('/*', (req, res, next) => {
     res.status(404).send({msg: 'Not found'})
