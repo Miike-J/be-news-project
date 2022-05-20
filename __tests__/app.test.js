@@ -9,6 +9,14 @@ beforeEach(() => seed(topicData))
 
 afterAll(() => db.end)
 
+describe.only('/api', () => {
+    test('200: Responds with json object describing all endpoints availble', () => {
+        return request(app).get('/api').expect(200).then(({body}) => {
+            expect(Object.keys(body)).toHaveLength(8)
+        })
+    })
+})
+
 describe('/api/topics', () => {
     test('200: Responds with array of topic objects each with slug and description', () => {
         return request(app).get('/api/topics').expect(200).then((results) => {
@@ -319,22 +327,4 @@ describe('/api/articles/articles_id refactor', () => {
             }))
         })
     })
-})
-
-describe('/api/comments/comment_id', () => {
-    test('204: delete comment by given id', () => {
-        return request(app).delete('/api/comments/18').expect(204).then(({body}) => {
-            expect(body).toEqual({})
-        })
-    })
-    test('404: comment_id too high', () => {
-        return request(app).delete('/api/comments/190').expect(404).then(({body}) => {
-            expect(body.msg).toBe('comment doesnt exist')
-        })
-    })
-    test('400: comment_id not a number', () => {
-        return request(app).delete('/api/comments/nine').expect(400).then(({body}) => {
-            expect(body.msg).toBe('bad request')    
-        })
-    }) 
 })
