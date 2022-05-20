@@ -33,7 +33,7 @@ describe('Incorrect file path', () => {
     })
 })
 
-describe('/api/articles', () => {
+describe.only('/api/articles', () => {
     test('200: Responds with an articles array of article objects - need a comment_count key - sorted by date in descending order', () =>{
         return request(app).get('/api/articles').expect(200).then(({body}) => {
             expect(body.articles).toBeInstanceOf(Array)
@@ -92,21 +92,6 @@ describe('/api/articles', () => {
     test('404: topic not in table', () => {
         return request(app).get('/api/articles?topic=cheese').expect(404).then(({body}) => {
             expect(body.msg).toBe('property doesnt exist')
-        })
-    })
-    test('400: sort_by blank', () => {
-        return request(app).get('/api/articles?sort_by=').expect(400).then(({body}) => {
-            expect(body.msg).toBe('bad request')
-        })
-    })
-    test('400: order blank', () => {
-        return request(app).get('/api/articles?order=').expect(400).then(({body}) => {
-            expect(body.msg).toBe('bad request')
-        })
-    })
-    test('400: topic blank', () => {
-        return request(app).get('/api/articles?topic=').expect(400).then(({body}) => {
-            expect(body.msg).toBe('bad request')
         })
     })
     test('200: chaining queries', () => {

@@ -36,38 +36,15 @@ exports.updateArticleById = (article_id, inc_votes) => {
     })
 }
 
-exports.selectArticles = (sort_by = 'created_at', order, topic) => {
+exports.selectArticles = (sort_by = 'created_at', order = 'desc', topic) => {
     const validSortBy = ['created_at', 'author', 'title', 'article_id', 'topic', 'votes', 'comment_count']
-    const validTopics = ['mitch', 'cats', 'paper']
 
     let qryStr = `SELECT articles.author, articles.title, articles.article_id,articles.topic, articles.created_at, articles.votes, CAST(COUNT(comments.article_id) AS int) as comment_count 
     FROM articles 
     LEFT JOIN comments 
-        ON articles.article_id = comments.article_id
+        ON articles.article_id = comments.article_id 
+    GROUP BY articles.article_id
     `
-
-    //topic 
-    if(topic){
-       if(!validTopics.includes(topic)) {
-           return Promise.reject({status: 404, msg: 'property doesnt exist'})
-       }
-    }
-
-    if(topic === ''){
-        return Promise.reject({status: 400, msg: 'bad request'})
-    }
-    
-
-    if(validTopics.includes(topic)) {
-        qryStr += ` WHERE articles.topic = '${topic}'`
-    }
-
-    qryStr += ` GROUP BY articles.article_id`
-
-    //sort_by
-    if(sort_by.length === 0) {
-        return Promise.reject({status: 400, msg: 'bad request'})
-    }
 
     if(sort_by){
         if(validSortBy.includes(sort_by)) {
@@ -77,23 +54,29 @@ exports.selectArticles = (sort_by = 'created_at', order, topic) => {
         }
     }   
 
-    //order
-    if(order){ 
-        if(!(order === 'asc' || order === 'desc')) {
-            return Promise.reject({status: 400, msg: 'bad request'})
-        }
-    }
-
-    if(order === ''){
+    if(!(order === 'asc' || order === 'desc')) {
         return Promise.reject({status: 400, msg: 'bad request'})
     }
+    
 
-    if(!order || order === 'desc'){
+    if(order === 'desc'){
         qryStr += ` DESC`
     }
     
     
     return db.query(qryStr).then(results => {
+        
+        if(topic){
+            const topicCheck = results.rows.filter(article => {
+            return article.topic === topic
+            })
+            if(topicCheck.length === 0){
+                return Promise.reject({status: 404, msg: 'property doesnt exist'})
+            } else {
+                return topicCheck  
+            }
+        }
+
         return results.rows
     })
 
