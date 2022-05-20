@@ -60,12 +60,12 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', topic) => {
         }
     }   
 
-    if(!(order === 'asc' || order === 'desc')) {
+    if(!(order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc')) {
         return Promise.reject({status: 400, msg: 'bad request'})
     }
     
 
-    if(order === 'desc'){
+    if(order.toLowerCase() === 'desc'){
         qryStr += ` DESC`
     }
     
