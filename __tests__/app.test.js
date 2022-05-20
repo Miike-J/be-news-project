@@ -4,6 +4,7 @@ const seed = require('../db/seeds/seed')
 const topicData = require('../db/data/test-data/index')
 const request = require('supertest')
 require('jest-sorted')
+const endpoints = require('../endpoints.json')
 
 beforeEach(() => seed(topicData))
 
@@ -13,6 +14,7 @@ describe.only('/api', () => {
     test('200: Responds with json object describing all endpoints availble', () => {
         return request(app).get('/api').expect(200).then(({body}) => {
             expect(Object.keys(body)).toHaveLength(8)
+            expect(body).toEqual(endpoints)
         })
     })
 })
