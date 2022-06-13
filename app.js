@@ -5,6 +5,9 @@ const {handlePSQLErrors, handleCustomErrors, handleServerErrors} = require('./Co
 const {getUsers} = require('./Controller/users.controller')
 const {deleteComment} = require('./Controller/comments.controller')
 const endpoint = require('./endpoints.json')
+const cors = require('cors')
+
+app.use(cors())
 
 const app = express()
 app.use(express.json())
