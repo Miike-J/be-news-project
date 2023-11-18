@@ -3,7 +3,13 @@ const seed = require('./seed.js');
 const db = require('../connection.js');
 
 const runSeed = () => {
-  return seed(devData).then(() => db.end());
+  return seed(devData)
+    .then(() => db.end())
+    .catch((err) => {
+      console.error('Error running seed:', err);
+      // Handle the error appropriately, e.g., exit the process or log it
+      process.exit(1);
+    });
 };
 
 runSeed();
