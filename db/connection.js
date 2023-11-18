@@ -43,7 +43,7 @@ if (process.env.NODE_ENV === 'production') {
 
 if (!connectionString) {
   console.error('Database connection string not set');
-  throw new Error('Database connection string not set', proce.env.NODE_ENV);
+  throw new Error('Database connection string not set', process.env.NODE_ENV);
 }
 
 const config = {
