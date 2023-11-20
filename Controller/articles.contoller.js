@@ -21,6 +21,8 @@ exports.patchArticleById = (req, res, next) => {
 
 exports.getArticles = (req, res, next) => {
 
+    console.log('here')
+
     const {sort_by, order, topic} = req.query
 
     selectArticles(sort_by, order, topic).then(results => {
