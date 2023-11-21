@@ -41,7 +41,7 @@ if (process.env.NODE_ENV === 'production') {
   console.log('Connection string set for Clever Cloud:', connectionString);
 }
 
-console.log(connectionString)
+console.log(connectionString, process.env.NODE_ENV)
 
 if (!connectionString) {
   console.error('Database connection string not set', process.env.NODE_ENV, "beans");
