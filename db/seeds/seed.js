@@ -6,6 +6,7 @@ const {
 } = require("../helpers/utils");
 const db = require("../connection");
 const { dropTables, createTables } = require("../helpers/manage-tables");
+console.log(process.env.NODE_ENV, "<<<<<<<<<<<<<<<<<<, IN SEED")
 
 const seed = async ({ topicData, userData, articleData, commentData }) => {
   await dropTables();
