@@ -20,15 +20,27 @@ exports.patchArticleById = (req, res, next) => {
 }
 
 exports.getArticles = (req, res, next) => {
+    console.log('here');
 
-    console.log('here')
+    try {
+        if (!req || !req.query) {
+            throw new Error('Request object or query parameters are undefined.');
+        }
 
-    const {sort_by, order, topic} = req.query
+        const { sort_by, order, topic } = req.query;
 
-    selectArticles(sort_by, order, topic).then(results => {
-        res.status(200).send({articles: results})
-    }).catch(next)
-}
+        if (!sort_by || !order || !topic) {
+            throw new Error('Missing required query parameters.');
+        }
+
+        selectArticles(sort_by, order, topic).then(results => {
+            res.status(200).send({ articles: results });
+        }).catch(next);
+    } catch (error) {
+        console.error('Error in getArticles:', error.message);
+        next(error); // Pass the error to the error-handling middleware
+    }
+};
 
 exports.getArticleCommentsById = (req, res, next) => {
     const {article_id} = req.params
