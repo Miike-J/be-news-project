@@ -20,7 +20,7 @@ exports.patchArticleById = (req, res, next) => {
 }
 
 exports.getArticles = (req, res, next) => {
-    console.log('here');
+    console.log('here', req.query);
   
     const { sort_by, order, topic } = req.query;
   
@@ -35,7 +35,7 @@ exports.getArticles = (req, res, next) => {
           console.error('Next is not a function:', next);
         }
       });
-  };
+};
 
 exports.getArticleCommentsById = (req, res, next) => {
     const {article_id} = req.params
