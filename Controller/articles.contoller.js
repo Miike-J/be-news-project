@@ -23,8 +23,8 @@ exports.getArticles = (req, res, next) => {
     console.log('here');
 
     try {
-        if (!req || !req.query) {
-            throw new Error('Request object or query parameters are undefined.');
+        if (!req.query) {
+            throw new Error('Request query parameters are undefined.');
         }
 
         const { sort_by, order, topic } = req.query;
