@@ -4,6 +4,9 @@ const path = require('path');
 
 let connectionString;
 
+// Set NODE_ENV to "production" if not set externally
+process.env.NODE_ENV = process.env.NODE_ENV || 'production';
+
 // Check if in a testing environment
 if (process.env.NODE_ENV === 'test') {
   console.log('In testing environment');
