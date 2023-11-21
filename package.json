@@ -5,11 +5,11 @@
   "main": "app.js",
   "scripts": {
     "setup-dbs": "psql -f ./db/setup.sql",
-    "seed": "node ./db/seeds/run-seed.js",
+    "seed": "NODE_ENV=production node ./db/seeds/run-seed.js",
     "test": "NODE_ENV=test jest",
     "prepare": "husky install",
-    "seed:prod": "npm run seed",
-    "start": "npm run seed && node listen.js"
+    "seed:prod": "NODE_ENV=production npm run seed",
+    "start": "NODE_ENV=production npm run seed && node listen.js"
   },
   "repository": {
     "type": "git",
