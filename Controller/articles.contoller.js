@@ -19,34 +19,16 @@ exports.patchArticleById = (req, res, next) => {
     }).catch(next)
 }
 
-exports.getArticles = (req, res, next) => {
-    console.log('here');
-
+exports.getArticles = async (req, res, next) => {
     try {
-        if (!req.query) {
-            throw new Error('Request query parameters are undefined.');
-        }
-
-        const { sort_by, order, topic } = req.query;
-
-        if (!sort_by || !order || !topic) {
-            throw new Error('Missing required query parameters.');
-        }
-
-        selectArticles(sort_by, order, topic)
-            .then(results => {
-                res.status(200).send({ articles: results });
-            })
-            .catch(error => {
-                console.error('Error in getArticles:', error.message);
-                res.status(500).send({ error: 'Internal Server Error' });
-            });
+      const { sort_by, order, topic } = req.query;
+      const articles = await selectArticles(sort_by, order, topic);
+      res.status(200).send({ articles });
     } catch (error) {
-        console.error('Error in getArticles:', error.message);
-        res.status(400).send({ error: 'Bad Request' });
+      next(error); // Pass the error to the next middleware
     }
-};
-
+  };
+  
 exports.getArticleCommentsById = (req, res, next) => {
     const {article_id} = req.params
 
