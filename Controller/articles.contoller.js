@@ -33,12 +33,17 @@ exports.getArticles = (req, res, next) => {
             throw new Error('Missing required query parameters.');
         }
 
-        selectArticles(sort_by, order, topic).then(results => {
-            res.status(200).send({ articles: results });
-        }).catch(next);
+        selectArticles(sort_by, order, topic)
+            .then(results => {
+                res.status(200).send({ articles: results });
+            })
+            .catch(error => {
+                console.error('Error in getArticles:', error.message);
+                res.status(500).send({ error: 'Internal Server Error' });
+            });
     } catch (error) {
         console.error('Error in getArticles:', error.message);
-        next(error); // Pass the error to the error-handling middleware
+        res.status(400).send({ error: 'Bad Request' });
     }
 };
 
