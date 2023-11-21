@@ -19,16 +19,24 @@ exports.patchArticleById = (req, res, next) => {
     }).catch(next)
 }
 
-exports.getArticles = async (req, res, next) => {
-    try {
-      const { sort_by, order, topic } = req.query;
-      const articles = await selectArticles(sort_by, order, topic);
-      res.status(200).send({ articles });
-    } catch (error) {
-      next(error); // Pass the error to the next middleware
-    }
-  };
+exports.getArticles = (req, res, next) => {
+    console.log('here');
   
+    const { sort_by, order, topic } = req.query;
+  
+    selectArticles(sort_by, order, topic)
+      .then((results) => {
+        res.status(200).send({ articles: results });
+      })
+      .catch((error) => {
+        if (typeof next === 'function') {
+          next(error);
+        } else {
+          console.error('Next is not a function:', next);
+        }
+      });
+  };
+
 exports.getArticleCommentsById = (req, res, next) => {
     const {article_id} = req.params
 
